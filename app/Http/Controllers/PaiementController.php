@@ -393,30 +393,55 @@ class PaiementController extends Controller
 
     public function update(Request $request, Paiement $paiement)
     {
+        // Valider les données entrantes
         $request->validate([
             'montant' => 'required|numeric|min:1',
             'moyen_paiement' => 'required|in:espece,mobile_money',
         ]);
 
-        // Vérifier si le paiement a été effectué avec Fedapay
+        // Vérifier si le paiement est mobile et déjà validé
         if ($paiement->moyen_paiement === 'mobile_money' && $paiement->transaction_id) {
             return redirect()->back()->with('error_message', 'Impossible de modifier un paiement mobile déjà validé.');
         }
 
-        $fraisScolarite = $paiement->inscription->classe->frais_scolarite;
-        $montantPaye = Paiement::where('inscription_id', $paiement->inscription_id)->where('annee_academique_id', $paiement->annee_academique_id)->where('id', '!=', $paiement->id)->sum('montant');
+        // $paiement = Paiement::with('inscription.classe')->find($paiement->id);
 
+        // Vérifier si l'inscription existe
+        if (!$paiement->inscription) {
+            return redirect()->back()->with('error_message', "L'inscription associée à ce paiement est introuvable.");
+        }
+
+        // Vérifier si la classe existe
+        if (!$paiement->inscription->classe) {
+            return redirect()->back()->with('error_message', 'La classe associée à cette inscription est introuvable.');
+        }
+
+        // Enregistrer l'ancien montant
+        $paiement->ancien_montant = $paiement->montant;
+
+        // Récupérer les frais de scolarité
+        $fraisScolarite = $paiement->inscription->classe->frais_scolarite;
+
+        // Calcul du montant payé avant modification
+        $montantPaye = Paiement::where('inscription_id', $paiement->inscription_id)
+            ->where('annee_academique_id', $paiement->annee_academique_id)
+            ->where('id', '!=', $paiement->id) // Exclure le paiement en cours de modification
+            ->sum('montant');
+
+        // Calcul du reste après modification
         $reste_apres_paiement = max(0, $fraisScolarite - ($montantPaye + $request->montant));
 
+        // Mise à jour des informations du paiement
         $paiement->montant = $request->montant;
         $paiement->moyen_paiement = $request->moyen_paiement;
         $paiement->reste_apres_paiement = $reste_apres_paiement;
         $paiement->save();
 
+        // Vérifier si le paiement est complété
         $montantPaye += $request->montant;
         if ($montantPaye >= $fraisScolarite) {
             return redirect()
-                ->route('paiement.index', [$inscription->eleve_id, $request->annee_academique_id])
+                ->route('paiement.index', [$paiement->inscription->eleve_id, $paiement->annee_academique_id])
                 ->with('paiement_effectue', true);
         }
 
