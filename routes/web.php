@@ -36,6 +36,9 @@ use Illuminate\Support\Facades\Route;
 //     return 'E-mail envoyé avec succès !';
 // });
 
+Route::get('/', function () {
+    return redirect()->route('login'); // Redirige vers la page de connexion
+});
 Route::get('login', [UserController::class, 'login'])->name('login');
 Route::post('handelogin', [UserController::class, 'handelogin'])->name('handelogin');
 
