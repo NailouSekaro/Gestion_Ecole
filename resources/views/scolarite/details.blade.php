@@ -79,10 +79,10 @@
                                                     <i class="fas fa-download"></i> Télécharger le reçu
                                                 </a>
 
-                                                <a href="{{ route('paiement.edit', $paiement->id) }}"
+                                                {{-- <a href="{{ route('paiement.edit', $paiement->id) }}"
                                                     class="btn btn-warning btn-sm">
                                                     Modifier
-                                                </a>
+                                                </a> --}}
                                             </td>
                                         </tr>
                                     @empty

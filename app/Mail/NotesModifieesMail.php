@@ -1,5 +1,6 @@
 <?php
 
+namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -19,9 +20,6 @@ class NotesModifieesMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Mise à jour des notes de votre enfant")
-                    ->markdown('emails.notes_modifiees')
-                    ->attach($this->pdfPath);
+        return $this->subject('Mise à jour des notes de votre enfant')->markdown('emails.notes_modifiees')->attach($this->pdfPath);
     }
 }
-
