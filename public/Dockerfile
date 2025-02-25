@@ -1,7 +1,7 @@
-# Utilise une image PHP avec Apache (pour Laravel)
+# Utilise une image PHP avec Apache
 FROM php:8.2-apache
 
-# Définit le répertoire de travail dans le conteneur
+# Définit le répertoire de travail
 WORKDIR /var/www/html
 
 # Installe les dépendances système nécessaires pour Laravel
