@@ -162,6 +162,21 @@
                                                         notes</a>
                                                     <a href="{{ route('note.moyenne', ['eleve_id' => $inscription->eleve->id, 'annee_academique_id' => $inscription->annee_academique->id]) }}"
                                                         type="button" class="btn btn-inverse-yellow btn-fw">Moyennes</a>
+                                                    @php
+                                                        $numero = $inscription->eleve->contact_parent;
+                                                        // Vérifier si le numéro commence par '0' et appartient au Bénin
+                                                        if (Str::startsWith($numero, '0')) {
+                                                            $numero = '229' . substr($numero, 1);
+                                                        }
+                                                        $message = urlencode(
+                                                            "Bonjour, je suis le responsable de l'école et je souhaite discuter de votre enfant.",
+                                                        );
+                                                    @endphp
+
+                                                    <a href="https://wa.me/{{ $numero }}?text={{ $message }}"
+                                                        target="_blank" class="btn btn-success">
+                                                        <i class="fab fa-whatsapp"></i> Contacter le parent
+                                                    </a>
 
                                                     {{-- <a href="{{ route('eleve.envoyer_notes', $inscription->eleve->id) }}"
                                                         class="btn btn-success btn-sm">

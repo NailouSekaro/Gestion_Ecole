@@ -1,0 +1,9 @@
+{
+  "build": {
+    "env": {
+      "APP_ENV": "production",
+      "APP_KEY": "base64:oMaZQM0d4FjhwwfMULMk+MzFhAltx0Fde3tNbjf46wY=",
+      "APP_DEBUG": "false"
+    }
+  }
+}
