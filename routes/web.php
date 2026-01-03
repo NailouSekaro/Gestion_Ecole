@@ -14,6 +14,11 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\UserPaymentController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaiementParentController;
+use App\Http\Controllers\EtablissementController;
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmploiTempsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +53,32 @@ Route::post('/validate-account-submit', [EnseignantController::class, 'validateA
 Route::get('payment-configuration', [PaiementController::class, 'getAccountInfo'])->name('payment.configuration');
 Route::post('handle-payment-configuration', [PaiementController::class, 'handleUpdateInfo'])->name('payments.Updateconfiguration');
 
+// Routes publiques pour paiements parents
+Route::prefix('paiement/parent')->group(function () {
+    Route::post('verify', [PaiementParentController::class, 'verifyMatricule'])->name('paiement.parent.verify');
+    Route::get('form/{eleve_id}', [PaiementParentController::class, 'showForm'])->name('paiement.parent.form');
+    Route::post('fedapay/initiate', [PaiementParentController::class, 'initiateFedapay'])->name('paiement.parent.fedapay.initiate');
+    Route::get('fedapay/callback', [PaiementParentController::class, 'fedapayCallback'])->name('paiement.parent.fedapay.callback');
+    Route::post('virement/store', [PaiementParentController::class, 'storeVirement'])->name('paiement.parent.virement.store');
+});
+
+// Route::get('/emplois_temps/hebdomadaire/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'showHebdomadaire'])->name('emploi_temps.hebdomadaire');
+Route::post('/consulter-emploi/verify', [EmploiTempsController::class, 'verify'])->name('emploi_temps.verify');
+Route::get('/consulter-emploi/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'showHebdomadairePublic'])->name('emploi_temps.consulter');
+
 Route::middleware('auth')->group(function () {
+    Route::get('etablissement-configuration', [EtablissementController::class, 'getEtablissementInfo'])->name('etablissement.configuration');
+    Route::post('handle-etablissement-configuration', [EtablissementController::class, 'handleUpdateEtablissement'])->name('etablissement.updateconfiguration');
+
+    Route::get('/eleves/{eleve_id}/annee/{annee_academique_id}/absences/create', [AbsenceController::class, 'create'])->name('absence.create');
+    Route::post('/eleves/{eleve_id}/annee/{annee_academique_id}/absences/store', [AbsenceController::class, 'store'])->name('absence.store');
+    Route::get('/absence/edit/{id}', [AbsenceController::class, 'edit'])->name('absence.edit');
+    Route::put('/absence/update/{id}', [AbsenceController::class, 'update'])->name('absence.update');
+    Route::delete('/absence/destroy/{id}', [AbsenceController::class, 'destroy'])->name('absence.destroy');
+    Route::get('/absence', [AbsenceController::class, 'index'])->name('absence.index');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
     Route::post('/cinetpay/notify', [PaymentController::class, 'handleNotification'])->name('cinetpay.notify');
     Route::get('/cinetpay/return', [PaymentController::class, 'handleReturn'])->name('cinetpay.return');
 
@@ -167,6 +197,20 @@ Route::middleware('auth')->group(function () {
         // route d'action pour la modification
         Route::put('/update/{id}', [NoteController::class, 'update'])->name('note.update');
         Route::get('/delete/{note}', [NoteController::class, 'delete'])->name('note.delete');
+
+        Route::get('/bulletin/{eleveId}/{anneeAcademiqueId}', [NoteController::class, 'calculerMoyennes'])->name('bulletin.show');
+        Route::get('/bulletin/export/{eleveId}/{anneeAcademiqueId}', [NoteController::class, 'exportPdf'])->name('bulletin.exportPdf');
+
+        Route::get('/notes/saisie-collective/{classe_id}/{annee_academique_id}', [NoteController::class, 'saisieCollective'])->name('note.saisie_collective');
+        Route::post('/notes/store-collective', [NoteController::class, 'storeCollective'])->name('note.store_collective');
+        Route::get('/notes/get-notes', [NoteController::class, 'getNotes'])->name('note.get_notes');
+        Route::get('/notes/classe/{classe_id}/{annee_academique_id}', [NoteController::class, 'voirClasse'])->name('note.voir_classe');
+
+        Route::get('/notes/rechercher-classe', [NoteController::class, 'rechercherClasse'])->name('note.rechercher_classe');
+
+        Route::get('/notes/edit/{note_id}', [NoteController::class, 'editNote'])->name('note.edit_note');
+
+        Route::put('/notes/update/{note_id}', [NoteController::class, 'updateNote'])->name('note.update_note');
     });
 
     Route::prefix('trimestre')->group(function () {
@@ -188,4 +232,34 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{id}', [CoefficientController::class, 'update'])->name('coefficient.update');
         Route::get('/delete/{coefficient}', [CoefficientController::class, 'delete'])->name('coefficient.delete');
     });
+
+    Route::prefix('emploi_du_temps')->group(function () {
+        Route::get('/create', [EmploiTempsController::class, 'create'])->name('emploi_temps.create');
+        Route::post('/store', [EmploiTempsController::class, 'store'])->name('emploi_temps.store');
+        Route::get('', [EmploiTempsController::class, 'index'])->name('emploi_temps.index');
+        Route::get('/get-enseignant', [EmploiTempsController::class, 'getEnseignant'])->name('emploi_temps.getEnseignant');
+        Route::get('/hebdomadaire/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'showHebdomadaire'])->name('emploi_temps.hebdomadaire');
+        Route::post('/generate', [EmploiTempsController::class, 'generateAutomatic'])->name('emploi_temps.generate');
+        // Route::post('/verify', [EmploiTempsController::class, 'verify'])->name('emploi_temps.verify');
+        Route::get('/pdf/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'exportPdf'])->name('emploi_temps.exportPdf');
+        // Route::get('/emplois_temps/edit/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'edit'])->name('emploi_temps.edit');
+        // Route::put('/emplois_temps/update/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'update'])->name('emploi_temps.update');
+        // Routes pour l'édition
+        Route::get('/edit/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'edit'])->name('emploi_temps.edit');
+        Route::put('/update/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'update'])->name('emploi_temps.update');
+
+        // Route AJAX pour modifier un seul créneau
+        Route::post('/update-creneau', [EmploiTempsController::class, 'updateCreneau'])->name('emploi_temps.updateCreneau');
+        Route::delete('/delete-creneau/{id}', [EmploiTempsController::class, 'deleteCreneau'])->name('emploi_temps.deleteCreneau');
+    });
+
+    // Route::prefix('emploi_du_temps')->group(function(){
+    //     Route::get('/create', [EmploiTempsController::class, 'create'])->name('emploi_temps.create');
+    //     Route::post('/store', [EmploiTempsController::class, 'store'])->name('emploi_temps.store');
+    //     Route::get('/', [EmploiTempsController::class, 'index'])->name('emploi_temps.index');
+    //     Route::get('/get-enseignant', [EmploiTempsController::class, 'getEnseignant'])->name('emploi_temps.getEnseignant');
+    //     Route::get('/hebdomadaire/{classeId}/{anneeAcademiqueId}', [EmploiTempsController::class, 'showHebdomadaire'])->name('emploi_temps.hebdomadaire');
+    //     Route::post('/generate', [EmploiTempsController::class, 'generateAutomatic'])->name('emploi_temps.generate');
+    //     Route::post('/verify', [EmploiTempsController::class, 'verify'])->name('emploi_temps.verify');
+    // });
 });

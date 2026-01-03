@@ -48,7 +48,7 @@ class TrimestreController extends Controller
         try {
             $request->validate(
                 [
-                    'nom' => 'required',
+                    'nom' => 'required|string|unique:trimestres,nom',
                     'annee_academique_id' => 'required|exists:annee_academiques,id',
                     'date_debut' => 'required|date|unique:trimestres,date_debut',
                     'date_fin' => 'required|date|unique:trimestres,date_fin|after_or_equal:date_debut',
@@ -59,15 +59,16 @@ class TrimestreController extends Controller
                     'date_fin.after_or_equal' => 'La date de début doit être une date inférieure ou égale à la date de fin.',
                     'date_debut.unique' => 'Cette date appartient déjà à un trimestre',
                     'date_fin.unique' => 'Cette date appartient déjà à un trimestre',
+                    'nom.unique' => 'Un trimestre existe déjà avec ce nom',
                 ],
             );
 
             // Vérifier si le trimestre précédent a une date de fin
             $dernierTrimestre = trimestre::orderBy('date_fin', 'desc')->first();
 
-            if ($dernierTrimestre && $dernierTrimestre->date_fin->isFuture()) {
-                return redirect()->back()->with('error_message', 'Vous ne pouvez pas ajouter un nouveau trimestre tant que la date de fin du trimestre précédent n\'est pas atteinte.');
-            }
+            // if ($dernierTrimestre && $dernierTrimestre->date_fin->isFuture()) {
+            //     return redirect()->back()->with('error_message', 'Vous ne pouvez pas ajouter un nouveau trimestre tant que la date de fin du trimestre précédent n\'est pas atteinte.');
+            // }
             trimestre::create($request->all());
 
             return redirect()->route('trimestre.index')->with('success_message', 'Trimestre créé avec success.');

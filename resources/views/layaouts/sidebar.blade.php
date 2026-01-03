@@ -11,7 +11,7 @@
                 <div class="profile-pic">
                     <div class="navbar-profile">
                         <img class="img-xs rounded-circle"
-                            src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('assets/images/faces/face15.jpg') }}"
+                            src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/default-avatar.jpg') }}"
                             alt="Photo de profil">
                     </div>
                     <div class="profile-name">
@@ -68,6 +68,16 @@
                 <span class="menu-title">Acceuil</span>
             </a>
         </li>
+
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('dashboard.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+            </a>
+        </li>
+
         <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
@@ -266,6 +276,16 @@
         </li>
 
         <li class="nav-item menu-items">
+            <a class="nav-link"
+                href="{{ route('etablissement.configuration') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-file-document-box"></i>
+                </span>
+                <span class="menu-title">Configuration ecole</span>
+            </a>
+        </li>
+
+        <li class="nav-item menu-items">
             <a class="nav-link" href="#">
                 <span class="menu-icon">
                     <i class="mdi mdi-contacts"></i>
@@ -278,18 +298,15 @@
                 <span class="menu-icon">
                     <i class="mdi mdi-security"></i>
                 </span>
-                <span class="menu-title">User Pages</span>
+                <span class="menu-title">Emplois du temps</span>
                 <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
-                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('eleve.recherche') }}"> Listes élèves
-                            par classe </a>
-                    </li> --}}
-                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('matiere.create') }}">Création des
-                            matières </a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('matiere.index') }}"> Listes des
-                            matières </a></li> --}}
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('emploi_temps.create') }}"> Création emploi du temps </a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('emploi_temps.index') }}">Listes emplois du temps</a></li>
+                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('emploi_temps.hebdomadaire') }}"> Liste hebdomadaire </a></li> --}}
                     {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('trimestre.create') }}"> Création de
                             trimestre </a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('trimestre.index') }}"> Listes des
@@ -302,6 +319,25 @@
                             enseignant </a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('enseignant.index') }}"> Listes des
                             enseignants </a></li> --}}
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <span class="menu-icon">
+                    <i class="mdi mdi-security"></i>
+                </span>
+                <span class="menu-title">Absences</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="auth">
+                <ul class="nav flex-column sub-menu">
+                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('emploi_temps.create') }}"> Création emploi du temps </a> --}}
+                    </li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('absence.index') }}">Listes des absences</a></li>
+
                 </ul>
             </div>
         </li>

@@ -1,786 +1,607 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layaouts.template')
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Gestion d'école</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+@section('content')
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --card-hover: #0f1729;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a8a8a8;
+        }
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    {{-- <link rel="stylesheet" href="style.css"> --}}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+        .content-wrapper {
+            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
 
+        .page-header h3 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            animation: fadeInDown 0.8s ease;
+        }
 
-</head>
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-<body>
-    <div class="container-scroller">
-        <!-- partial:partials/_sidebar.html -->
-        @include('layaouts.sidebar')
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            <!-- partial:partials/_navbar.html -->
-            @include('layaouts.topbar')
-            <!-- partial -->
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-            <div class="main-panel">
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
 
-                <div class="content-wrapper">
-                    <div class="row">
-                        <div class="col-12 grid-margin stretch-card">
-                            @if (Session::get('success_message'))
-                                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                    {{ Session::get('success_message') }}
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            animation: fadeInUp 0.8s ease;
+        }
 
-                                </div>
-                            @endif
-                            {{-- <div class="card corona-gradient-card">
-                                <div class="card-body py-0 px-0 px-sm-3">
-                                    <div class="row align-items-center">
-                                        <div class="col-4 col-sm-3 col-xl-2">
-                                            <img src="assets/images/dashboard/Group126@2x.png"
-                                                class="gradient-corona-img img-fluid" alt="">
-                                        </div>
-                                        <div class="col-5 col-sm-7 col-xl-8 p-0">
-                                            <h4 class="mb-1 mb-sm-0">Want even more features?</h4>
-                                            <p class="mb-0 font-weight-normal d-none d-sm-block">Check out our Pro
-                                                version with 5 unique layouts!</p>
-                                        </div>
-                                        <div class="col-3 col-sm-2 col-xl-2 pl-0 text-center">
-                                            <span>
-                                                <a href="https://www.bootstrapdash.com/product/corona-admin-template/"
-                                                    target="_blank"
-                                                    class="btn btn-outline-light btn-rounded get-started-btn">Upgrade to
-                                                    PRO</a>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">$12.34</h3>
-                                                <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-success ">
-                                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Potential growth</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">$17.34</h3>
-                                                <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-success">
-                                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Revenue current</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">$12.34</h3>
-                                                <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-danger">
-                                                <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Daily Income</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">$31.53</h3>
-                                                <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-success ">
-                                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Expense current</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Transaction History</h4>
-                                    <canvas id="transaction-history" class="transaction-chart"></canvas>
-                                    <div
-                                        class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                                        <div class="text-md-center text-xl-left">
-                                            <h6 class="mb-1">Transfer to Paypal</h6>
-                                            <p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>
-                                        </div>
-                                        <div
-                                            class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                                            <h6 class="font-weight-bold mb-0">$236</h6>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                                        <div class="text-md-center text-xl-left">
-                                            <h6 class="mb-1">Tranfer to Stripe</h6>
-                                            <p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>
-                                        </div>
-                                        <div
-                                            class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                                            <h6 class="font-weight-bold mb-0">$593</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex flex-row justify-content-between">
-                                        <h4 class="card-title mb-1">Open Projects</h4>
-                                        <p class="text-muted mb-1">Your data status</p>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="preview-list">
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-primary">
-                                                            <i class="mdi mdi-file-document"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <div class="flex-grow">
-                                                            <h6 class="preview-subject">Admin dashboard design</h6>
-                                                            <p class="text-muted mb-0">Broadcast web app mockup</p>
-                                                        </div>
-                                                        <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                                            <p class="text-muted">15 minutes ago</p>
-                                                            <p class="text-muted mb-0">30 tasks, 5 issues </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-success">
-                                                            <i class="mdi mdi-cloud-download"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <div class="flex-grow">
-                                                            <h6 class="preview-subject">Wordpress Development</h6>
-                                                            <p class="text-muted mb-0">Upload new design</p>
-                                                        </div>
-                                                        <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                                            <p class="text-muted">1 hour ago</p>
-                                                            <p class="text-muted mb-0">23 tasks, 5 issues </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-info">
-                                                            <i class="mdi mdi-clock"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <div class="flex-grow">
-                                                            <h6 class="preview-subject">Project meeting</h6>
-                                                            <p class="text-muted mb-0">New project discussion</p>
-                                                        </div>
-                                                        <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                                            <p class="text-muted">35 minutes ago</p>
-                                                            <p class="text-muted mb-0">15 tasks, 2 issues</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-danger">
-                                                            <i class="mdi mdi-email-open"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <div class="flex-grow">
-                                                            <h6 class="preview-subject">Broadcast Mail</h6>
-                                                            <p class="text-muted mb-0">Sent release details to team</p>
-                                                        </div>
-                                                        <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                                            <p class="text-muted">55 minutes ago</p>
-                                                            <p class="text-muted mb-0">35 tasks, 7 issues </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-warning">
-                                                            <i class="mdi mdi-chart-pie"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <div class="flex-grow">
-                                                            <h6 class="preview-subject">UI Design</h6>
-                                                            <p class="text-muted mb-0">New application planning</p>
-                                                        </div>
-                                                        <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                                            <p class="text-muted">50 minutes ago</p>
-                                                            <p class="text-muted mb-0">27 tasks, 4 issues </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Revenue</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">$32123</h2>
-                                                <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                                            </div>
-                                            <h6 class="text-muted font-weight-normal">11.38% Since last month</h6>
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-codepen text-primary ml-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Sales</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">$45850</h2>
-                                                <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p>
-                                            </div>
-                                            <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6>
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-wallet-travel text-danger ml-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Purchase</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">$2039</h2>
-                                                <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p>
-                                            </div>
-                                            <h6 class="text-muted font-weight-normal">2.27% Since last month</h6>
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-monitor text-success ml-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-12 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Order Status</h4>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </th>
-                                                    <th> Client Name </th>
-                                                    <th> Order No </th>
-                                                    <th> Product Cost </th>
-                                                    <th> Project </th>
-                                                    <th> Payment Mode </th>
-                                                    <th> Start Date </th>
-                                                    <th> Payment Status </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/faces/face1.jpg" alt="image" />
-                                                        <span class="pl-2">Henry Klein</span>
-                                                    </td>
-                                                    <td> 02312 </td>
-                                                    <td> $14,500 </td>
-                                                    <td> Dashboard </td>
-                                                    <td> Credit card </td>
-                                                    <td> 04 Dec 2019 </td>
-                                                    <td>
-                                                        <div class="badge badge-outline-success">Approved</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/faces/face2.jpg" alt="image" />
-                                                        <span class="pl-2">Estella Bryan</span>
-                                                    </td>
-                                                    <td> 02312 </td>
-                                                    <td> $14,500 </td>
-                                                    <td> Website </td>
-                                                    <td> Cash on delivered </td>
-                                                    <td> 04 Dec 2019 </td>
-                                                    <td>
-                                                        <div class="badge badge-outline-warning">Pending</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/faces/face5.jpg" alt="image" />
-                                                        <span class="pl-2">Lucy Abbott</span>
-                                                    </td>
-                                                    <td> 02312 </td>
-                                                    <td> $14,500 </td>
-                                                    <td> App design </td>
-                                                    <td> Credit card </td>
-                                                    <td> 04 Dec 2019 </td>
-                                                    <td>
-                                                        <div class="badge badge-outline-danger">Rejected</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/faces/face3.jpg" alt="image" />
-                                                        <span class="pl-2">Peter Gill</span>
-                                                    </td>
-                                                    <td> 02312 </td>
-                                                    <td> $14,500 </td>
-                                                    <td> Development </td>
-                                                    <td> Online Payment </td>
-                                                    <td> 04 Dec 2019 </td>
-                                                    <td>
-                                                        <div class="badge badge-outline-success">Approved</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="form-check form-check-muted m-0">
-                                                            <label class="form-check-label">
-                                                                <input type="checkbox" class="form-check-input">
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/faces/face4.jpg" alt="image" />
-                                                        <span class="pl-2">Sallie Reyes</span>
-                                                    </td>
-                                                    <td> 02312 </td>
-                                                    <td> $14,500 </td>
-                                                    <td> Website </td>
-                                                    <td> Credit card </td>
-                                                    <td> 04 Dec 2019 </td>
-                                                    <td>
-                                                        <div class="badge badge-outline-success">Approved</div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xl-4 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex flex-row justify-content-between">
-                                        <h4 class="card-title">Messages</h4>
-                                        <p class="text-muted mb-1 small">View all</p>
-                                    </div>
-                                    <div class="preview-list">
-                                        <div class="preview-item border-bottom">
-                                            <div class="preview-thumbnail">
-                                                <img src="assets/images/faces/face6.jpg" alt="image"
-                                                    class="rounded-circle" />
-                                            </div>
-                                            <div class="preview-item-content d-flex flex-grow">
-                                                <div class="flex-grow">
-                                                    <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                                                        <h6 class="preview-subject">Leonard</h6>
-                                                        <p class="text-muted text-small">5 minutes ago</p>
-                                                    </div>
-                                                    <p class="text-muted">Well, it seems to be working now.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="preview-item border-bottom">
-                                            <div class="preview-thumbnail">
-                                                <img src="assets/images/faces/face8.jpg" alt="image"
-                                                    class="rounded-circle" />
-                                            </div>
-                                            <div class="preview-item-content d-flex flex-grow">
-                                                <div class="flex-grow">
-                                                    <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                                                        <h6 class="preview-subject">Luella Mills</h6>
-                                                        <p class="text-muted text-small">10 Minutes Ago</p>
-                                                    </div>
-                                                    <p class="text-muted">Well, it seems to be working now.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="preview-item border-bottom">
-                                            <div class="preview-thumbnail">
-                                                <img src="assets/images/faces/face9.jpg" alt="image"
-                                                    class="rounded-circle" />
-                                            </div>
-                                            <div class="preview-item-content d-flex flex-grow">
-                                                <div class="flex-grow">
-                                                    <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                                                        <h6 class="preview-subject">Ethel Kelly</h6>
-                                                        <p class="text-muted text-small">2 Hours Ago</p>
-                                                    </div>
-                                                    <p class="text-muted">Please review the tickets</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="preview-item border-bottom">
-                                            <div class="preview-thumbnail">
-                                                <img src="assets/images/faces/face11.jpg" alt="image"
-                                                    class="rounded-circle" />
-                                            </div>
-                                            <div class="preview-item-content d-flex flex-grow">
-                                                <div class="flex-grow">
-                                                    <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                                                        <h6 class="preview-subject">Herman May</h6>
-                                                        <p class="text-muted text-small">4 Hours Ago</p>
-                                                    </div>
-                                                    <p class="text-muted">Thanks a lot. It was easy to fix it .</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-4 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Portfolio Slide</h4>
-                                    <div class="owl-carousel owl-theme full-width owl-carousel-dash portfolio-carousel"
-                                        id="owl-carousel-basic">
-                                        <div class="item">
-                                            <img src="assets/images/dashboard/Rectangle.jpg" alt="">
-                                        </div>
-                                        <div class="item">
-                                            <img src="assets/images/dashboard/Img_5.jpg" alt="">
-                                        </div>
-                                        <div class="item">
-                                            <img src="assets/images/dashboard/img_6.jpg" alt="">
-                                        </div>
-                                    </div>
-                                    <div class="d-flex py-4">
-                                        <div class="preview-list w-100">
-                                            <div class="preview-item p-0">
-                                                <div class="preview-thumbnail">
-                                                    <img src="assets/images/faces/face12.jpg" class="rounded-circle"
-                                                        alt="">
-                                                </div>
-                                                <div class="preview-item-content d-flex flex-grow">
-                                                    <div class="flex-grow">
-                                                        <div
-                                                            class="d-flex d-md-block d-xl-flex justify-content-between">
-                                                            <h6 class="preview-subject">CeeCee Bass</h6>
-                                                            <p class="text-muted text-small">4 Hours Ago</p>
-                                                        </div>
-                                                        <p class="text-muted">Well, it seems to be working now.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="text-muted">Well, it seems to be working now. </p>
-                                    <div class="progress progress-md portfolio-progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 50%"
-                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-xl-4 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">To do list</h4>
-                                    <div class="add-items d-flex">
-                                        <input type="text" class="form-control todo-list-input"
-                                            placeholder="enter task..">
-                                        <button class="add btn btn-primary todo-list-add-btn">Add</button>
-                                    </div>
-                                    <div class="list-wrapper">
-                                        <ul class="d-flex flex-column-reverse text-white todo-list todo-list-custom">
-                                            <li>
-                                                <div class="form-check form-check-primary">
-                                                    <label class="form-check-label">
-                                                        <input class="checkbox" type="checkbox"> Create invoice
-                                                    </label>
-                                                </div>
-                                                <i class="remove mdi mdi-close-box"></i>
-                                            </li>
-                                            <li>
-                                                <div class="form-check form-check-primary">
-                                                    <label class="form-check-label">
-                                                        <input class="checkbox" type="checkbox"> Meeting with Alita
-                                                    </label>
-                                                </div>
-                                                <i class="remove mdi mdi-close-box"></i>
-                                            </li>
-                                            <li class="completed">
-                                                <div class="form-check form-check-primary">
-                                                    <label class="form-check-label">
-                                                        <input class="checkbox" type="checkbox" checked> Prepare for
-                                                        presentation </label>
-                                                </div>
-                                                <i class="remove mdi mdi-close-box"></i>
-                                            </li>
-                                            <li>
-                                                <div class="form-check form-check-primary">
-                                                    <label class="form-check-label">
-                                                        <input class="checkbox" type="checkbox"> Plan weekend outing
-                                                    </label>
-                                                </div>
-                                                <i class="remove mdi mdi-close-box"></i>
-                                            </li>
-                                            <li>
-                                                <div class="form-check form-check-primary">
-                                                    <label class="form-check-label">
-                                                        <input class="checkbox" type="checkbox"> Pick up kids from
-                                                        school </label>
-                                                </div>
-                                                <i class="remove mdi mdi-close-box"></i>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Visitors by Countries</h4>
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="table-responsive">
-                                                <table class="table">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-us"></i>
-                                                            </td>
-                                                            <td>USA</td>
-                                                            <td class="text-right"> 1500 </td>
-                                                            <td class="text-right font-weight-medium"> 56.35% </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-de"></i>
-                                                            </td>
-                                                            <td>Germany</td>
-                                                            <td class="text-right"> 800 </td>
-                                                            <td class="text-right font-weight-medium"> 33.25% </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-au"></i>
-                                                            </td>
-                                                            <td>Australia</td>
-                                                            <td class="text-right"> 760 </td>
-                                                            <td class="text-right font-weight-medium"> 15.45% </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-gb"></i>
-                                                            </td>
-                                                            <td>United Kingdom</td>
-                                                            <td class="text-right"> 450 </td>
-                                                            <td class="text-right font-weight-medium"> 25.00% </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-ro"></i>
-                                                            </td>
-                                                            <td>Romania</td>
-                                                            <td class="text-right"> 620 </td>
-                                                            <td class="text-right font-weight-medium"> 10.25% </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <i class="flag-icon flag-icon-br"></i>
-                                                            </td>
-                                                            <td>Brasil</td>
-                                                            <td class="text-right"> 230 </td>
-                                                            <td class="text-right font-weight-medium"> 75.00% </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <div id="audience-map" class="vector-map"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 45px rgba(102, 126, 234, 0.4);
+            border-color: rgba(102, 126, 234, 0.6);
+        }
+
+        .card-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 1rem 0;
+            animation: fadeInUp 1s ease;
+        }
+
+        .card-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #emploisTable {
+            width: 100%;
+            color: var(--text-primary);
+        }
+
+        #emploisTable thead {
+            background: var(--primary-gradient);
+        }
+
+        #emploisTable thead th {
+            color: white;
+            font-weight: 600;
+            padding: 1rem;
+            border: none;
+        }
+
+        #emploisTable tbody tr {
+            background: var(--card-bg);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #emploisTable tbody tr:hover {
+            background: var(--card-hover);
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        #emploisTable tbody td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.6);
+        }
+
+        .alert-success {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: var(--text-primary);
+            border-radius: 15px;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Animation pour les cartes avec délai */
+        .grid-margin:nth-child(1) .dashboard-card { animation-delay: 0.1s; }
+        .grid-margin:nth-child(2) .dashboard-card { animation-delay: 0.2s; }
+        .grid-margin:nth-child(3) .dashboard-card { animation-delay: 0.3s; }
+        .grid-margin:nth-child(4) .dashboard-card { animation-delay: 0.4s; }
+        .grid-margin:nth-child(5) .dashboard-card { animation-delay: 0.5s; }
+
+        /* DataTables personnalisé */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            background: var(--card-bg);
+            color: var(--text-primary) !important;
+            border-radius: 8px;
+            margin: 0 3px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--primary-gradient) !important;
+            color: white !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--text-secondary);
+        }
+
+        /* Style pour les icônes des stats */
+        .stat-icon-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-icon-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-icon-danger { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        /* Effet glassmorphism pour les conteneurs de graphiques */
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h3 class="page-title"> Tableau de Bord ✨ </h3>
+        </div>
+
+        @if (session('success_message'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success_message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('error_message'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error_message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <div class="row">
+            @if (auth()->user()->role === 'Admin')
+                <!-- Contenu pour admins -->
+                <div class="col-md-4 grid-margin stretch-card">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-building-fill stat-icon stat-icon-primary"></i>
+                            <h4 class="card-title mt-3">Classes</h4>
+                            <p class="stat-number">{{ $total_classes }}</p>
                         </div>
                     </div>
                 </div>
-                <!-- content-wrapper ends -->
-                <!-- partial:partials/_footer.html -->
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
-                            bootstrapdash.com 2020</span>
-                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a
-                                href="https://www.bootstrapdash.com/bootstrap-admin-template/"
-                                target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+                <div class="col-md-4 grid-margin stretch-card">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-person-badge-fill stat-icon stat-icon-success"></i>
+                            <h4 class="card-title mt-3">Enseignants</h4>
+                            <p class="stat-number">{{ $total_enseignants }}</p>
+                        </div>
                     </div>
-                </footer>
-                <!-- partial -->
-            </div>
-            <!-- main-panel ends -->
+                </div>
+                <div class="col-md-4 grid-margin stretch-card">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-calendar-fill stat-icon stat-icon-info"></i>
+                            <h4 class="card-title mt-3">Emplois du Temps</h4>
+                            <p class="stat-number">{{ $total_emplois }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 grid-margin">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">📋 Derniers Emplois Créés</h4>
+                            @if ($recent_emplois->isEmpty())
+                                <p class="text-muted">Aucun emploi du temps récent.</p>
+                            @else
+                                <div class="table-container">
+                                    <table id="emploisTable" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Classe</th>
+                                                <th>Année Académique</th>
+                                                <th>Date de Création</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($recent_emplois as $emploi)
+                                                <tr>
+                                                    <td>{{ $emploi->classe->nom_classe }}</td>
+                                                    <td>{{ $emploi->annee_Academique->annee }}</td>
+                                                    <td>{{ $emploi->created_at->format('d/m/Y H:i') }}</td>
+                                                    <td>
+                                                        <a href="{{ route('emploi_temps.edit', ['classeId' => $emploi->classe_id, 'anneeAcademiqueId' => $emploi->annee_academique_id]) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 grid-margin">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">⚡ Actions Rapides</h4>
+                            <a href="{{ route('emploi_temps.create') }}" class="btn btn-primary me-2">Créer un Emploi</a>
+                            <a href="{{ route('enseignant.index') }}" class="btn btn-secondary">Gérer les Utilisateurs</a>
+                        </div>
+                    </div>
+                </div>
+
+            @elseif (auth()->user()->role === 'enseignant')
+                <!-- Contenu pour les enseignants -->
+                <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-book-fill stat-icon stat-icon-primary"></i>
+                            <h4 class="card-title mt-3">Cours Assignés</h4>
+                            <p class="stat-number">{{ $total_cours }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-person-x-fill stat-icon stat-icon-danger"></i>
+                            <h4 class="card-title mt-3">Absences</h4>
+                            <p class="stat-number">{{ $total_absences }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 grid-margin">
+                    <div class="card dashboard-card chart-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">📚 Vos Cours pour {{ $annee_active }}</h4>
+                            @if ($emplois->isEmpty())
+                                <p class="text-muted">Aucun cours assigné pour l'année académique {{ $annee_active }}.</p>
+                            @else
+                                <div class="chart-container">
+                                    <canvas id="coursParJourChart"></canvas>
+                                </div>
+                                <div class="table-container mt-4">
+                                    <table id="emploisTable" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Jour</th>
+                                                <th>Classe</th>
+                                                <th>Matière</th>
+                                                <th>Horaire</th>
+                                                <th>Année Académique</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($emplois as $jour => $jourEmplois)
+                                                @foreach ($jourEmplois as $emploi)
+                                                    <tr>
+                                                        <td>{{ $jour }}</td>
+                                                        <td>{{ $emploi->classe->nom_classe }}</td>
+                                                        <td>{{ $emploi->matiere->nom }}</td>
+                                                        <td>{{ $emploi->heure_debut }} - {{ $emploi->heure_fin }}</td>
+                                                        <td>{{ $emploi->annee_Academique->annee }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 grid-margin">
+                    <div class="card dashboard-card chart-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">📊 Graphique des Absences</h4>
+                            @if ($absencesParJour->isEmpty())
+                                <p class="text-muted">Aucune absence enregistrée.</p>
+                            @else
+                                <div class="chart-container">
+                                    <canvas id="absencesParJourChart"></canvas>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 grid-margin">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">⚡ Actions Rapides</h4>
+                            <a href="{{ route('emploi_temps.index') }}" class="btn btn-primary">Voir tous les Emplois</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
-        <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <script src="{{ asset('assets/vendors/chart.js/Chart.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-    <script src="{{ asset('assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
-    <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>
-    <script src="{{ asset('assets/js/misc.js') }}"></script>
-    <script src="{{ asset('assets/js/settings.js') }}"></script>
-    <script src="{{ asset('assets/js/todolist.js') }}"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
-    <!-- End custom js for this page -->
 
-    </script>
-    {{-- <script src="{{ asset('assets/js/bootstrap.bundle.min.js' )}}"></script> --}}
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-
+    <!-- Scripts pour DataTables et Chart.js -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#emploisTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 }
+                ]
+            });
+        });
 
-</body>
+        @if (auth()->user()->role === 'enseignant')
+            // Chart.js pour les cours par jour avec style moderne
+            const ctxCours = document.getElementById('coursParJourChart')?.getContext('2d');
+            if (ctxCours) {
+                new Chart(ctxCours, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($emplois->keys()->toArray()) !!},
+                        datasets: [{
+                            label: 'Nombre de Cours par Jour',
+                            data: {!! json_encode($emplois->map->count()->toArray()) !!},
+                            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 2,
+                            borderRadius: 10,
+                            hoverBackgroundColor: 'rgba(118, 75, 162, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(102, 126, 234, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#a8a8a8'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#a8a8a8'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    color: '#e8e8e8',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 1500,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
+                });
+            }
 
-</html>
+            // Chart.js pour les absences par jour avec style moderne
+            const ctxAbsences = document.getElementById('absencesParJourChart')?.getContext('2d');
+            if (ctxAbsences) {
+                new Chart(ctxAbsences, {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($absencesParJour->pluck('date_absence')->toArray()) !!},
+                        datasets: [{
+                            label: 'Absences par Jour',
+                            data: {!! json_encode($absencesParJour->pluck('total')->toArray()) !!},
+                            backgroundColor: 'rgba(250, 112, 154, 0.2)',
+                            borderColor: 'rgba(250, 112, 154, 1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: 'rgba(250, 112, 154, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(250, 112, 154, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#a8a8a8'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(250, 112, 154, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#a8a8a8'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    color: '#e8e8e8',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutCubic'
+                        }
+                    }
+                });
+            }
+        @endif
+    </script>
+@endsection

@@ -34,6 +34,16 @@ class note extends Model
         return $this->belongsTo(Eleve::class, 'eleve_id');
     }
 
+    public function classe()
+    {
+        return $this->belongsTo(classe::class, 'classe_id');
+    }
+
+    public function annee_academique()
+    {
+        return $this->belongsTo(annee_academique::class, 'annee_academique_id');
+    }
+
     // protected static function booted()
     // {
     //     static::created(function ($note) {

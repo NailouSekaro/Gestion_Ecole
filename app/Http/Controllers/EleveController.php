@@ -37,9 +37,18 @@ class EleveController extends Controller
 
     public function create()
     {
-        $classes = classe::all();
-        $annees = Annee_academique::all();
-        return view('eleve.create', compact('classes', 'annees'));
+        $user = auth()->user();
+
+        // Comparaison insensible à la casse des rôles
+        $role = strtolower($user->role ?? '');
+
+        if ($role === 'admin') {
+            $classes = classe::all();
+            $annees = Annee_academique::all();
+            return view('eleve.create', compact('classes', 'annees'));
+        } else {
+            return redirect()->back()->with('error_message', 'Vous n\'êtes pas autorisé à effectuer cette action.');
+        }
     }
     public function store(Request $request)
     {
@@ -166,15 +175,24 @@ class EleveController extends Controller
 
     public function edit($id)
     {
-        // $eleves = Eleve::with('inscriptions.classe')->get();
-        // $eleves = Eleve::with('inscriptions.classe')->get();
-        $classes = classe::all();
-        $annees = Annee_academique::all();
-        $eleve = Eleve::findOrfail($id);
-        $inscription = Inscription::where('eleve_id', $id)->latest()->first();
-        $statuts = ['Passant(e)', 'Doublant(e)'];
-        // $annees = $inscription->annee_academique;
-        return view('eleve.edit', compact('eleve', 'classes', 'inscription', 'statuts', 'annees'));
+        $user = auth()->user();
+
+        // Comparaison insensible à la casse des rôles
+        $role = strtolower($user->role ?? '');
+
+        if ($role === 'admin') {
+            // $eleves = Eleve::with('inscriptions.classe')->get();
+            // $eleves = Eleve::with('inscriptions.classe')->get();
+            $classes = classe::all();
+            $annees = Annee_academique::all();
+            $eleve = Eleve::findOrfail($id);
+            $inscription = Inscription::where('eleve_id', $id)->latest()->first();
+            $statuts = ['Passant(e)', 'Doublant(e)'];
+            // $annees = $inscription->annee_academique;
+            return view('eleve.edit', compact('eleve', 'classes', 'inscription', 'statuts', 'annees'));
+        } else {
+            return redirect()->back()->with('error_message', 'Vous n\'êtes pas autorisé à effectuer cette action.');
+        }
     }
     public function update(Request $request, $id)
     {

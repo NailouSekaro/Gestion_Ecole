@@ -9,7 +9,8 @@ class Paiement extends Model
 {
     use HasFactory;
     protected $guarded = [''];
-    protected $fillable = ['inscription_id', 'annnee_academique_id', 'montant', 'date_paiement', 'moyen_paiement', 'transaction_id', 'ancien_montant', 'corrige'];
+    protected $fillable = ['inscription_id', 'annnee_academique_id', 'montant', 'date_paiement', 'moyen_paiement', 'transaction_id', 'ancien_montant', 'corrige','statut', // Ajout
+        'preuve',];
 
     // 🔹 Relation avec Inscription
     public function inscription()

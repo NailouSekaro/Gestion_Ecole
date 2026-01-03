@@ -43,6 +43,11 @@ class Eleve extends Model
         return $this->belongsToMany(Classe::class, 'inscriptions', 'eleve_id', 'classe_id');
     }
 
+    protected $casts = [
+        'date_naissance' => 'date',
+        // 'date_fin' => 'date',
+    ];
+
     // public function getPhotoUrlAttribute()
     // {
     //     if ($this->photo) {

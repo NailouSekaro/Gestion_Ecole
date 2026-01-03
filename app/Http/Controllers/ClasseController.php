@@ -11,33 +11,61 @@ class ClasseController extends Controller
 {
     public function index()
     {
-        $classes = classe::paginate(5);
+        $classes = classe::all();
         return view('classe.index', compact('classes'));
     }
 
     public function create()
     {
-        return view('classe.create');
+        $user = auth()->user();
+
+        // Comparaison insensible à la casse des rôles
+        $role = strtolower($user->role ?? '');
+
+        if ($role === 'admin') {
+            return view('classe.create');
+        } else {
+            return redirect()->back()->with('error_message', 'Vous n\'êtes pas autorisé à effectuer cette action.');
+        }
     }
 
     public function edit(classe $classe)
     {
-        return view('classe.edit', compact('classe'));
+        $user = auth()->user();
+
+        // Comparaison insensible à la casse des rôles
+        $role = strtolower($user->role ?? '');
+
+        if ($role === 'admin') {
+            return view('classe.edit', compact('classe'));
+        } else {
+            return redirect()->back()->with('error_message', 'Vous n\'êtes pas autorisé à effectuer cette action.');
+        }
+
     }
 
     // Interraction BD
     public function store(Request $request)
     {
-        // Enregistrer une classe
-        $request->validate([
-            'nom_classe' => 'required|unique:classes,nom_classe',
-            'cycle' => 'required',
-            'frais_scolarite' => 'required|numeric|min:100',
-        ]);
+        $user = auth()->user();
 
-        classe::create($request->all());
+        // Comparaison insensible à la casse des rôles
+        $role = strtolower($user->role ?? '');
 
-        return redirect()->route('classe.index')->with('success_message', 'Classe créée avec success.');
+        if ($role === 'admin') {
+            // Enregistrer une classe
+            $request->validate([
+                'nom_classe' => 'required|unique:classes,nom_classe',
+                'cycle' => 'required',
+                'frais_scolarite' => 'required|numeric|min:100',
+            ]);
+
+            classe::create($request->all());
+
+            return redirect()->route('classe.index')->with('success_message', 'Classe créée avec success.');
+        } else {
+            return redirect()->back()->with('error_message', 'Vous n\'êtes pas autorisé à effectuer cette action.');
+        }
     }
 
     public function update(Request $request, $id)
@@ -92,6 +120,6 @@ class ClasseController extends Controller
 
         $classes = classe::all();
         $annees = Annee_academique::all();
-        return view('classe.liste', compact('inscriptions', 'classe', 'effectif', 'garçon', 'fille', 'passant', 'doublant',  'classes', 'annees'));
+        return view('classe.liste', compact('inscriptions', 'classe', 'effectif', 'garçon', 'fille', 'passant', 'doublant', 'classes', 'annees'));
     }
 }

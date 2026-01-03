@@ -210,7 +210,7 @@ class EnseignantController extends Controller
     public function index()
     {
         // Récupérer les enseignants avec leurs relations
-        $enseignants = Enseignant::with(['user', 'classes', 'anneeAcademique', 'matiere'])->paginate(10);
+        $enseignants = Enseignant::with(['user', 'classes', 'anneeAcademique', 'matiere'])->paginate(100);
 
         // Statistiques
         $effectif_total = Enseignant::count();

@@ -63,7 +63,7 @@
                             <div class="form-group">
                                 <label for="exampleInputPassword4">Année académique</label>
                                 <select class="form-control" name="annee_academique_id" id="exampleSelectGender">
-                                    <option></option>
+                                    {{-- <option></option> --}}
                                     @foreach ($annees as $annee)
                                         <option value="{{ $annee->id }}">{{ $annee->annee }}</option>
                                     @endforeach

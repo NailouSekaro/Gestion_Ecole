@@ -36,4 +36,10 @@ class classe extends Model
             ->withPivot('annee_academique_id')
             ->withTimestamps();
     }
+
+    public function emplois()
+    {
+        return $this->hasMany(EmploiTemps::class, 'classe_id');
+    }
+    
 }

@@ -42,7 +42,7 @@ class CoefficientController extends Controller
 
     public function index()
     {
-        $coefficients = coefficient::paginate(5);
+        $coefficients = coefficient::all();
         return view('coefficient.index', compact('coefficients'));
     }
 

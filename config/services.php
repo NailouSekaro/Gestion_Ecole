@@ -42,6 +42,20 @@ return [
         'public_key' => env( 'FEDAPAY_PUBLIC_KEY' ),
         'secret_key' => env( 'FEDAPAY_SECRET_KEY' ),
         'mode' => env( 'FEDAPAY_MODE', 'live' ),
+        'bank' => ['iban' => env('BANK_IBAN'),]
     ],
+
+    // Remove provider and alias registration from this file.
+
+
+/*
+|--------------------------------------------------------------------------
+| DomPDF Service Provider and Alias
+|--------------------------------------------------------------------------
+|
+| Move the provider and alias registration to config/app.php.
+|
+*/
+
 
 ];

@@ -37,6 +37,15 @@
 
                             <input type="hidden" name="classe_id" value="{{ $classe->id }}">
 
+                            <!-- Note de conduite -->
+                            {{-- <h3>Conduite</h3>
+                            <div class="form-group">
+                                <label>Note de conduite</label>
+                                <input type="number" class="form-control" placeholder="Entrer la note de conduite"
+                                    name="conduite" value="{{ $conduiteExistante->valeur_note ?? '' }}" min="0" max="20"
+                                    step="0.01">
+                            </div> --}}
+
                             <!-- Affichage des matières -->
                             @foreach ($matieres as $matiere)
                                 <h3>{{ $matiere->nom }}</h3>
