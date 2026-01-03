@@ -1,10 +1,7 @@
-# Utilise une image PHP avec Apache
-FROM php:8.2-apache
+# Utiliser PHP 8.1 avec Apache
+FROM php:8.1-apache
 
-# Définit le répertoire de travail
-WORKDIR /var/www/html
-
-# Installe les dépendances système nécessaires pour Laravel
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -13,29 +10,33 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    libzip-dev
 
-# Active le module Apache rewrite (nécessaire pour Laravel)
-RUN a2enmod rewrite
+# Installer les extensions PHP nécessaires
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Copie le fichier de configuration Apache pour Laravel
-COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copie les fichiers de ton projet Laravel dans le conteneur
-COPY . .
+# Définir le répertoire de travail
+WORKDIR /var/www/html
 
-# Installe Composer (gestionnaire de dépendances PHP)
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Copier les fichiers du projet
+COPY . /var/www/html
 
-# Installe les dépendances de Laravel avec Composer
+# Installer les dépendances Laravel
 RUN composer install --optimize-autoloader --no-dev
 
-# Définit les permissions pour le dossier de stockage Laravel
+# Configurer les permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose le port 80 (port par défaut d'Apache)
+# Configurer Apache
+RUN a2enmod rewrite
+COPY docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+
+# Exposer le port 80
 EXPOSE 80
 
-# Commande pour démarrer Apache
+# Commande de démarrage
 CMD ["apache2-foreground"]
