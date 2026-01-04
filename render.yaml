@@ -3,7 +3,7 @@ services:
     name: gestion_ecole
     env: docker
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: Dockerfile
     envVars:
       - key: APP_NAME
         value: Gestion_ecole
