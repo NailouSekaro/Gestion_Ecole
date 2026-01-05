@@ -1,59 +1,50 @@
-# Utiliser PHP 8.1 avec Apache
 FROM php:8.1-apache
 
-# Installer les dépendances système
+# Autoriser Composer en root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Installer dépendances système
 RUN apt-get update && apt-get install -y \
     git \
+    unzip \
     curl \
+    libzip-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
+    && docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    intl \
     zip \
-    unzip \
-    libzip-dev \
+    gd \
+    fileinfo \
     && rm -rf /var/lib/apt/lists/*
 
-# Installer les extensions PHP nécessaires
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
 # Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Définir le répertoire de travail
-WORKDIR /var/www/html
-
-# Copier composer.json et composer.lock
-COPY composer.json composer.lock ./
-
-# Installer les dépendances avec limite mémoire
-RUN COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist --no-scripts --no-autoloader
-
-# Copier tous les fichiers du projet
-COPY . /var/www/html
-
-# Générer l'autoloader
-RUN composer dump-autoload --optimize --no-dev
-
-# Configurer les permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Configurer Apache
-RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html/public\n\
-    <Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-    </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Activer mod_rewrite
 RUN a2enmod rewrite
 
-# Exposer le port 80
+# Définir le dossier de travail
+WORKDIR /var/www/html
+
+# Copier tout le projet
+COPY . .
+
+# Installer dépendances Laravel (SANS options dangereuses)
+RUN composer install --no-dev --optimize-autoloader
+
+# Permissions Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# Config Apache (public/)
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' \
+    /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 80
 
-# Démarrer Apache
 CMD ["apache2-foreground"]

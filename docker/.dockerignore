@@ -1,5 +1,10 @@
-/node_modules
-/vendor
-/.git
-/.env
-/storage/*.key
+# /node_modules
+# /vendor
+# /.git
+# /.env
+# /storage/*.key
+
+vendor
+node_modules
+.env
+.git
