@@ -22,29 +22,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier composer.json et composer.lock en premier (pour cache Docker)
+# Copier composer.json et composer.lock
 COPY composer.json composer.lock ./
 
-# Installer les dépendances Laravel avec limite mémoire augmentée
-RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
-    --optimize-autoloader \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --no-scripts \
-    --no-autoloader
+# Installer les dépendances avec limite mémoire
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist --no-scripts --no-autoloader
 
-# Copier le reste des fichiers du projet
+# Copier tous les fichiers du projet
 COPY . /var/www/html
 
-# Générer l'autoloader optimisé
+# Générer l'autoloader
 RUN composer dump-autoload --optimize --no-dev
 
 # Configurer les permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configurer Apache directement
+# Configurer Apache
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -61,5 +55,5 @@ RUN a2enmod rewrite
 # Exposer le port 80
 EXPOSE 80
 
-# Commande de démarrage
+# Démarrer Apache
 CMD ["apache2-foreground"]
