@@ -35,7 +35,9 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer dépendances Laravel (SANS options dangereuses)
-RUN composer install --no-dev --optimize-autoloader
+# RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
 
 # Permissions Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache \
