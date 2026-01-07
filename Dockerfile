@@ -13,14 +13,17 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libicu-dev \
+    libpq-dev \
     && docker-php-ext-install \
     pdo_mysql \
+    pdo_pgsql \
     mbstring \
     intl \
     zip \
     gd \
     fileinfo \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
