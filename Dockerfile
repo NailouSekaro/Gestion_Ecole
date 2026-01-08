@@ -52,5 +52,9 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' \
 
 EXPOSE 80
 
+RUN php artisan config:clear \
+    && php artisan cache:clear \
+    && php artisan view:clear
+
 CMD php artisan migrate --force && apache2-foreground
 
